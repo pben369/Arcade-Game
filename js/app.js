@@ -42,10 +42,9 @@ let PlayerParam = function(x,y,sprite) {
 
 const player = new PlayerParam(215, 476, 'images/char-boy.png');
 
+//check for collision
 function isCollide() {
-    // console.log(allEnemies);
     for (let currentEnemy of allEnemies) {
-        // console.log(currentEnemy);
         if (currentEnemy.x < player.x + player.width &&
             currentEnemy.x + currentEnemy.width > player.x &&
             currentEnemy.y < player.y + player.height &&
@@ -56,12 +55,94 @@ function isCollide() {
     }
 }
 
+PlayerParam.prototype.update = function(dt) {
+
+    let popupTitle = document.querySelector('.popup-title');
+
+    if(isCollide()){
+        bugBite = true;
+        if (bugBite) {
+            player.y = 476;
+            if (player.life - 1 === 0){
+                gameOver = true;
+                popupTitle.innerHTML = "Ouch!! Game Over";
+                togglePopup();
+                popUpControls();
+            }else {
+                player.life -= 1;
+                bugBite = false;
+            }
+        }
+        console.log("player.life = " + player.life);
+    }
+
+    if(player.y <= 61 && !gameWon && !bugBite){
+        setTimeout(function(){
+            // console.log('woot!');
+            popupTitle.innerHTML = "YOU WON!!!";
+            togglePopup();
+            popUpControls();
+        }, 800);
+        gameWon = true;
+    }
+};
+
+PlayerParam.prototype.handleInput = function(dt) {
+    let cellWidth = 101;
+    let cellHeight = 83;
+
+    switch (dt) {
+        case "up":
+            if(this.y - cellHeight >= 0 && !bugBite && 
+                !gameWon && !gameOver){
+                this.y -= cellHeight;
+            }
+            break;
+        case "down":
+            if(this.y + cellHeight < ctx.canvas.height-100 && 
+                !bugBite && !gameWon && !gameOver){
+                this.y += cellHeight;
+            }
+            break;
+        case "left":
+            if(this.x - cellWidth >= 0 && !bugBite && 
+                !gameWon && !gameOver){
+                this.x -= cellWidth;
+            }
+            break;
+        case "right":
+            if(this.x + cellWidth < ctx.canvas.width && 
+                !bugBite && !gameWon && !gameOver){
+                this.x += cellWidth;
+            }
+            break;
+    }
+};
+
+PlayerParam.prototype.render = function() {
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+// This listens for key presses and sends the keys to your
+document.addEventListener('keyup', function(e) {
+    var allowedKeys = {
+        37: 'left',
+        38: 'up',
+        39: 'right',
+        40: 'down'
+    };
+
+    player.handleInput(allowedKeys[e.keyCode]);
+});
+
+
 let popup       = document.querySelector(".popup");
 let gameWon     = false;
 let bugBite     = false;
 let gameOver    = false;
 
-//Display a pop-up with score values i.e. time taken, moves made and stars earned
+//Display a pop-up with the result and an button to
+//play again.
 function togglePopup() {
     popup.classList.toggle("show-popup");
 }
@@ -97,83 +178,3 @@ function popUpControls(){
     }
     window.addEventListener("click", windowOnClick);
 }
-
-
-PlayerParam.prototype.update = function(dt) {
-
-    let popupTitle = document.querySelector('.popup-title');
-
-    if(isCollide()){
-        bugBite = true;
-
-        if (bugBite) {
-            player.y = 476;
-
-            if (player.life - 1 === 0){
-                gameOver = true;
-                popupTitle.innerHTML = "Ouch!! Game Over";
-                togglePopup();
-                popUpControls();
-            }else {
-                player.life -= 1;
-                bugBite = false;
-            }
-        }
-
-        console.log("player.life = " + player.life);
-    }
-
-    if(player.y <= 61 && !gameWon && !bugBite){
-        setTimeout(function(){
-            // console.log('woot!');
-            popupTitle.innerHTML = "YOU WON!!!";
-            togglePopup();
-            popUpControls();
-        }, 800);
-        gameWon = true;
-    }
-};
-
-PlayerParam.prototype.handleInput = function(dt) {
-
-    let cellWidth = 101;
-    let cellHeight = 83;
-    switch (dt) {
-        case "up":
-            if(this.y - cellHeight >= 0 && !bugBite && !gameWon && !gameOver){
-                this.y -= cellHeight;
-            }
-            break;
-        case "down":
-            if(this.y + cellHeight < ctx.canvas.height-100 && !bugBite && !gameWon && !gameOver){
-                this.y += cellHeight;
-            }
-            break;
-        case "left":
-            if(this.x - cellWidth >= 0 && !bugBite && !gameWon && !gameOver){
-                this.x -= cellWidth;
-            }
-            break;
-        case "right":
-            if(this.x + cellWidth < ctx.canvas.width && !bugBite && !gameWon && !gameOver){
-                this.x += cellWidth;
-            }
-            break;
-    }
-};
-
-PlayerParam.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
-// This listens for key presses and sends the keys to your
-document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down'
-    };
-
-    player.handleInput(allowedKeys[e.keyCode]);
-});

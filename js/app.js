@@ -4,7 +4,7 @@ let EnemyParam = function(x,y) {
     this.y = y;
     this.sprite = 'images/enemy-bug.png';
     this.height = 81;
-    this.width = 85;
+    this.width  = 85;
 };
 
 const allEnemyYPosition= [130, 210, 300];
@@ -35,9 +35,9 @@ let PlayerParam = function(x,y,sprite) {
     this.startingY = 476;
     this.startingX = 215;
     this.sprite = sprite;
-    this.width= 70;
-    this.height= 64;
-    this.life = 5;
+    this.width  = 70;
+    this.height = 64;
+    this.life   = 5;
 };
 
 const player = new PlayerParam(215, 476, 'images/char-boy.png');
@@ -57,7 +57,8 @@ function isCollide() {
 
 PlayerParam.prototype.update = function(dt) {
 
-    let popupTitle = document.querySelector('.popup-title');
+    let popupTitle  = document.querySelector('.popup-title');
+    let lifeLeft    = document.querySelector('.life-left');
 
     if(isCollide()){
         bugBite = true;
@@ -71,6 +72,7 @@ PlayerParam.prototype.update = function(dt) {
             }else {
                 player.life -= 1;
                 bugBite = false;
+                lifeLeft.innerHTML = "Life x " + player.life;
             }
         }
         console.log("player.life = " + player.life);
@@ -88,8 +90,8 @@ PlayerParam.prototype.update = function(dt) {
 };
 
 PlayerParam.prototype.handleInput = function(dt) {
-    let cellWidth = 101;
-    let cellHeight = 83;
+    let cellWidth   = 101;
+    let cellHeight  = 83;
 
     switch (dt) {
         case "up":
@@ -136,10 +138,10 @@ document.addEventListener('keyup', function(e) {
 });
 
 
-let popup       = document.querySelector(".popup");
-let gameWon     = false;
-let bugBite     = false;
-let gameOver    = false;
+let popup    = document.querySelector(".popup");
+let gameWon  = false;
+let bugBite  = false;
+let gameOver = false;
 
 //Display a pop-up with the result and an button to
 //play again.
@@ -147,20 +149,25 @@ function togglePopup() {
     popup.classList.toggle("show-popup");
 }
 
+function resetParam(){
+    let lifeLeft  = document.querySelector('.life-left');
+
+    togglePopup();
+    bugBite = false;
+    gameWon = false;
+    gameOver = false;
+    player.y = 476;
+    player.x = 215;
+    player.life = 5;
+    lifeLeft.innerHTML = "Life x " + player.life;
+
+    console.log("toggle");
+}
 //remove popup and reset game once player clicks on "Play Again" button.
 function playAgainBtnTrigger(){
     let playAgain = document.querySelector(".play-again-btn");
 
-    playAgain.addEventListener("click",function(){
-        popup.classList.toggle("show-popup");
-        console.log("toggle");
-        bugBite = false;
-        gameWon = false;
-        gameOver = false;
-        player.y = 476;
-        player.x = 215;
-        player.life = 5;
-    });
+    playAgain.addEventListener("click",resetParam);
 }
 
 //function to implement pop-up controls i.e. close buttons and play again button

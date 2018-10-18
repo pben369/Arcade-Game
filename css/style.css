@@ -1,7 +1,7 @@
+
 body {
     text-align: center;
 }
-
 
 /*
  * Styles for the Pop-up
@@ -81,4 +81,8 @@ body {
     width: 120px;
     background-color: #319EA8;
     color: #fff;
+}
+
+.life-left{
+    font-size: 28px;
 }

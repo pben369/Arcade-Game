@@ -32,9 +32,12 @@ EnemyParam.prototype.render = function() {
 let PlayerParam = function(x,y,sprite) {
     this.x = x;
     this.y = y;
+    this.startingY = 476;
+    this.startingX = 215;
     this.sprite = sprite;
     this.width= 70;
     this.height= 64;
+    this.life = 5;
 };
 
 const player = new PlayerParam(215, 476, 'images/char-boy.png');
@@ -53,18 +56,82 @@ function isCollide() {
     }
 }
 
+let popup       = document.querySelector(".popup");
+let gameWon     = false;
+let bugBite     = false;
+let gameOver    = false;
+
+//Display a pop-up with score values i.e. time taken, moves made and stars earned
+function togglePopup() {
+    popup.classList.toggle("show-popup");
+}
+
+//remove popup and reset game once player clicks on "Play Again" button.
+function playAgainBtnTrigger(){
+    let playAgain = document.querySelector(".play-again-btn");
+
+    playAgain.addEventListener("click",function(){
+        popup.classList.toggle("show-popup");
+        console.log("toggle");
+        bugBite = false;
+        gameWon = false;
+        gameOver = false;
+        player.y = 476;
+        player.x = 215;
+        player.life = 5;
+    });
+}
+
+//function to implement pop-up controls i.e. close buttons and play again button
+//aslo close pop-up when user clicks on the window outside the pop-up
+function popUpControls(){
+    let closeButton = document.querySelector(".close-button");
+    closeButton.addEventListener("click", togglePopup);
+
+    playAgainBtnTrigger();
+
+    function windowOnClick(event) {
+        if (event.target === popup) {
+            togglePopup();
+        }
+    }
+    window.addEventListener("click", windowOnClick);
+}
+
 
 PlayerParam.prototype.update = function(dt) {
+
+    let popupTitle = document.querySelector('.popup-title');
+
     if(isCollide()){
-        console.log("Bitten");
+        bugBite = true;
+
+        if (bugBite) {
+            player.y = 476;
+
+            if (player.life - 1 === 0){
+                gameOver = true;
+                popupTitle.innerHTML = "Ouch!! Game Over";
+                togglePopup();
+                popUpControls();
+            }else {
+                player.life -= 1;
+                bugBite = false;
+            }
+        }
+
+        console.log("player.life = " + player.life);
     }
 
-    // if(this.y <= 61){
-    //     setTimeout(function(){
-    //         console.log('woot!');
-    //         player.y = 476;
-    //     }, 800);
-    // }
+    if(player.y <= 61 && !gameWon && !bugBite){
+        setTimeout(function(){
+            // console.log('woot!');
+            popupTitle.innerHTML = "YOU WON!!!";
+            togglePopup();
+            popUpControls();
+        }, 800);
+        gameWon = true;
+    }
 };
 
 PlayerParam.prototype.handleInput = function(dt) {
@@ -73,23 +140,22 @@ PlayerParam.prototype.handleInput = function(dt) {
     let cellHeight = 83;
     switch (dt) {
         case "up":
-            if(this.y - cellHeight >= 0){
+            if(this.y - cellHeight >= 0 && !bugBite && !gameWon && !gameOver){
                 this.y -= cellHeight;
-                console.log(this.y)
             }
             break;
         case "down":
-            if(this.y + cellHeight < ctx.canvas.height-100){
+            if(this.y + cellHeight < ctx.canvas.height-100 && !bugBite && !gameWon && !gameOver){
                 this.y += cellHeight;
             }
             break;
         case "left":
-            if(this.x - cellWidth >= 0){
+            if(this.x - cellWidth >= 0 && !bugBite && !gameWon && !gameOver){
                 this.x -= cellWidth;
             }
             break;
         case "right":
-            if(this.x + cellWidth < ctx.canvas.width){
+            if(this.x + cellWidth < ctx.canvas.width && !bugBite && !gameWon && !gameOver){
                 this.x += cellWidth;
             }
             break;

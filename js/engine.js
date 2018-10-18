@@ -13,12 +13,12 @@
  * writing app.js a little simpler to work with.
  */
 
-var Engine = (function(global) {
+let Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
      * set the canvas elements height/width and add it to the DOM.
      */
-    var doc = global.document,
+    let doc = global.document,
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
@@ -38,7 +38,7 @@ var Engine = (function(global) {
          * would be the same for everyone (regardless of how fast their
          * computer is) - hurray time!
          */
-        var now = Date.now(),
+        let now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
@@ -82,6 +82,8 @@ var Engine = (function(global) {
         // checkCollisions();
     }
 
+   
+
     /* This is called by the update function and loops through all of the
      * objects within your allEnemies array as defined in app.js and calls
      * their update() methods. It will then call the update function for your
@@ -106,7 +108,7 @@ var Engine = (function(global) {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
          */
-        var rowImages = [
+        let rowImages = [
                 'images/water-block.png',   // Top row is water
                 'images/stone-block.png',   // Row 1 of 3 of stone
                 'images/stone-block.png',   // Row 2 of 3 of stone
@@ -156,12 +158,51 @@ var Engine = (function(global) {
         player.render();
     }
 
+    let popup = document.querySelector(".popup");
+
+    //Display a pop-up with score values i.e. time taken, moves made and stars earned
+    function togglePopup() {
+        popup.classList.toggle("show-popup");
+    }
+
+    //remove popup and reset game once player clicks on "Play Again" button.
+    function playAgainBtnTrigger(){
+        let playAgain = document.querySelector(".play-again-btn");
+
+        playAgain.addEventListener("click",function(){
+            togglePopup();
+            player.y = 476;
+        });
+    }
+
+    //function to implement pop-up controls i.e. close buttons and play again button
+    //aslo close pop-up when user clicks on the window outside the pop-up
+    function popUpControls(){
+        let closeButton = document.querySelector(".close-button");
+        closeButton.addEventListener("click", togglePopup);
+
+        playAgainBtnTrigger();
+
+        function windowOnClick(event) {
+            if (event.target === popup) {
+                togglePopup();
+            }
+        }
+        window.addEventListener("click", windowOnClick);
+    }
+
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        if(player.y <= 61){
+            setTimeout(function(){
+                console.log('woot!');
+                togglePopup();
+                popUpControls();
+            }, 800);
+        }
     }
 
     /* Go ahead and load all of the images we know we're going to need to

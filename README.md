@@ -13,5 +13,5 @@ In this game you have a Player and Enemies (bugs). The goal of the player is to 
 
 ## How to play:
 
-Just download the source code and open index.html in any browser and play. or just visit
-[Arcade Game](https://pben369.github.io/arcade-game/) to play the game. Enjoy!!
+Just download the source code and open index.html in any browser and play. 
+or just visit [Arcade Game](https://pben369.github.io/arcade-game/) to play the game. Enjoy!!
